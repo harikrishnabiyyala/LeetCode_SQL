@@ -1,0 +1,146 @@
+
+
+Q.Find Customer Referee
+referee_id <> 2  this will not show the null value rows so use explicityly referee_id IS NULL or refree_id <> 2
+or we can do IFNULL(refree_id, -1) <> 2 
+if you have multiple columns to check for null COALESCE(referee_id, referee_num, -1) <> 2
+Coalesce returns the first non-null value in a list. If all the values in the list are NULL, then the function returns null. 
+https://www.datacamp.com/tutorial/coalesce-sql-function
+---
+Q.Invalid Tweets 
+for calcuating the characters length use char_length() function . Length() function calculates interms of bytes so its not appropriate
+---
+Q. Rising Temperatures
+For subtracting date using w1.recordDate - INTERVAL 1 DAY . instead of w1.recordDate - 1 which is wrong which make 0 day of month
+while we donot necessarly use = , we can use xcolumnOfTable - 1 = ycolumn of Table , we can use >= . It means we are free to use any Operation there .
+If you want to compare with previous day row . self join with above codition and then do filtering based On requirement .
+---
+Q.Average Time of Process per Machine
+we have ROUND(x, 2) and AVG() functions and COUNT(*) skips if particular column is null. SO if you want to display count .
+use COUNT(column_name) . this will count null value as count 0 .
+---
+Q. Employee Bonus
+you can have a default value to return for IFNULL(column, 500) as here they asked employee with bonus < 1000. we can have default value 
+some thing < 1000 where we find bonus is NULL. so that that record  also we get as output
+---
+Q. Managers with at Least 5 Direct Reports
+Always check to group by using Id , here names can be duplicate so use id instead of name 
+Having is used to filter when Group by is used 
+---
+Q. Confirmation Rate 
+if you want to count a specific value in column how many times it has occured you can use IF and modify the required text to 1 and others to 0 and use the sum .     SUM(IF(colum = 'text', 1, 0)) and there is function ROUND(value, precesion) here precesion is no of decimal places 
+when count(*) is used along with group by it returns the no of rows in each Group . it will not return entire table rows count
+----
+Q. Not boring Movie
+we can use Idcolumn % 2 = 1 to get the Odd id rows
+when you want to compare column data with a text use lower(column) Like '%text%';
+----
+Q.Average selling price 
+if you have prices table which says startdate and enddatte price .and actual another table which says purchase date 
+you can join both tables using ON a.product_id = b.product_id and startdate <= purchase_date and purchase_date <= enddate
+group them by product id 
+and then multiply price with units to get the total sale and then divide by  SUM(units )
+using IFNULL(column, 0) you can change the output as required
+----
+Q.Project Employees I
+Grouped by project_id
+use AVG() function to find the Average . It finds the Avg of column of each Group not the whole column
+----
+Q Percentage of Users Attended the contest
+you can write without join here . but the count of users query runs for every row its not efficient so use cross join and look into userids and figure out
+---
+Q monthly Transactions I
+you can use DATE_FORMAT(trans_date, '%Y-%m') to get the year month in format of 2024-02 
+check the DATE_FORMAT special values to extract the necessary format from date
+---
+Q. Immediate Food Delivery II
+
+we can give a rank to reach row using Dense Rank and do some filtering 
+DENSE_RANK() OVER(PARTITION BY customer_id ORDER BY order_date ASC) 
+MIN() to get the minimum value of the column
+---
+Q 550. Game Play Analysis IV
+if we want to get the people who logged in again on next day tweak the join such that logindate - 1 = first login 
+first login you can get by using min(login_date) or we can write solution with dense_rank()
+---
+Q User Activity for the Past 30 Days I
+
+we can use activity_date between DATE_SUB('2019-07-27', INTERVAL 29 DAY) and '2019-07-27'
+To filter out the dates that we want in the interval . here the question is 30 days so we use 29 as 
+edge dates 
+---
+Q Biggest Single Number
+If there is no output from your query but answer expected is null 
+then you can use SELECT( ) as required_Column      . This gives output as null
+---
+Q 610. Triangle Judgement
+sum of two sides should be always greater than 3rd side so check all combinations . 
+---
+Q 180. Consecutive Numbers
+To find the consecutive occurances we can leverage the id will be constantly increasing .
+using n number of joins and tweaking the join on codition that x + 1 = y and y + 1 = z
+---
+*** Q product Price at a Given Date
+we can use temporant table using the syntax 
+WITH data AS
+(SELECT *, DATEDIFF('2019-08-16', change_date) AS diff FROM Products)
+
+and use this data as table
+
+ DATEDIFF('2019-08-16', change_date)
+----
+Q 1204. Last Person to Fit in the Bus
+Trick to calculate Running total without using window functions
+if you want a running sum then you can use self join with the condition 
+q1.turn >= q2.turn . this causes all the turns less than current turn as group
+---
+Q 1907. Count Salary Categories
+we can create category table using select and union of strings and then using the case in main
+table we figure out which category the belong 
+if we do not use seperate table of category and do just group by . we may miss out any category if no 
+one is part of that category so we need category table.
+---
+Q Employees WHose manager Left the company
+Put the where clause as soon as possible to reduce the data  and then join
+---
+Q Movie Rating 
+when multiple questions asked each having 1 answer and finally return table of answers 
+you can use UNION ALl to show all answers in one table 
+---
+Q Restaurant Growth
+use join and on trick to get the running sum records and 
+using filter on datediff() and date_add we get a group of consequetive 6 days records
+---
+Q Department Top Three Salaries
+using Dense_rank give the rank to each department and filter the top 3 using where rank <= 3 to 
+filter out to three salaries
+---
+Q Fix Names in a Table
+we can use 
+CONCAT(UPPER(SUBSTR(name, 1, 1)),LOWER(SUBSTR(name,2, CHAR_LENGTH(name)- 1))) AS name
+
+ , concat() to do string operations
+ 
+ or 
+ concat(upper(LEFT(name, 1)), lower(RIGHT(name, length(name)-1))) as name
+ 
+ here left and right gives no of characters from that left and right ends 
+ ----
+ Q Patient with a condition
+ we can use REGEXP in where clause
+ WHERE conditions REGEXP '\\bDIAB1'
+ ---
+ https://www3.ntu.edu.sg/home/ehchua/programming/howto/Regexe.html
+ https://learnbyexample.github.io/python-regex-cheatsheet/
+ ---
+ Q Delete Duplicate Emails 
+ make a cross join and using On conditon p1.id > p2.id . delete all those records
+ ---
+ Q*** second Highest Salary
+ we can use     LIMIT 1,1    here first 1 represent offeset 1 and second 1 represents no of records to show.
+ or we can write limit 1 offset 1.
+ ---
+ Q Group sold Products By the Date 
+ when you want to concatenate the column date after doing a group by we can use this function 
+GROUP_CONCAT(DISTINCT product ORDER BY product SEPARATOR ',') AS products
+----
